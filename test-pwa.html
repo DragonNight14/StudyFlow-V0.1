@@ -1,0 +1,222 @@
+asdd<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test - Assignment Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .pass { background: #4CAF50; }
+        .fail { background: #f44336; }
+        .warning { background: #ff9800; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #results {
+            white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 PWA Functionality Test</h1>
+    
+    <div class="test-card">
+        <h2>📱 PWA Features Check</h2>
+        <div id="pwa-tests"></div>
+        <button onclick="runPWATests()">Run PWA Tests</button>
+    </div>
+
+    <div class="test-card">
+        <h2>🔧 Service Worker Status</h2>
+        <div id="sw-status"></div>
+        <button onclick="checkServiceWorker()">Check Service Worker</button>
+    </div>
+
+    <div class="test-card">
+        <h2>📄 Manifest Check</h2>
+        <div id="manifest-status"></div>
+        <button onclick="checkManifest()">Check Manifest</button>
+    </div>
+
+    <div class="test-card">
+        <h2>🖼️ Icon Check</h2>
+        <div id="icon-status"></div>
+        <button onclick="checkIcons()">Check Icons</button>
+    </div>
+
+    <div class="test-card">
+        <h2>📊 Test Results</h2>
+        <div id="results"></div>
+        <button onclick="runAllTests()">Run All Tests</button>
+    </div>
+
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            results.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+        }
+
+        function createStatus(text, type) {
+            return `<span class="status ${type}">${text}</span>`;
+        }
+
+        async function runPWATests() {
+            const container = document.getElementById('pwa-tests');
+            let html = '';
+
+            // Check if it's a PWA
+            if ('serviceWorker' in navigator) {
+                html += createStatus('✓ Service Worker Support', 'pass') + '<br>';
+            } else {
+                html += createStatus('✗ No Service Worker Support', 'fail') + '<br>';
+            }
+
+            // Check manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                html += createStatus('✓ Manifest Link Found', 'pass') + '<br>';
+            } else {
+                html += createStatus('✗ No Manifest Link', 'fail') + '<br>';
+            }
+
+            // Check if installable
+            if ('BeforeInstallPromptEvent' in window) {
+                html += createStatus('✓ Install Prompt Support', 'pass') + '<br>';
+            } else {
+                html += createStatus('⚠ Install Prompt Not Available', 'warning') + '<br>';
+            }
+
+            container.innerHTML = html;
+            log('PWA tests completed');
+        }
+
+        async function checkServiceWorker() {
+            const container = document.getElementById('sw-status');
+            let html = '';
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        html += createStatus('✓ Service Worker Registered', 'pass') + '<br>';
+                        html += `<small>Scope: ${registration.scope}</small><br>`;
+                        
+                        if (registration.active) {
+                            html += createStatus('✓ Service Worker Active', 'pass') + '<br>';
+                        } else {
+                            html += createStatus('⚠ Service Worker Not Active', 'warning') + '<br>';
+                        }
+                    } else {
+                        html += createStatus('✗ No Service Worker Registration', 'fail') + '<br>';
+                    }
+                } catch (error) {
+                    html += createStatus('✗ Service Worker Error: ' + error.message, 'fail') + '<br>';
+                }
+            } else {
+                html += createStatus('✗ Service Worker Not Supported', 'fail') + '<br>';
+            }
+
+            container.innerHTML = html;
+            log('Service Worker check completed');
+        }
+
+        async function checkManifest() {
+            const container = document.getElementById('manifest-status');
+            let html = '';
+
+            try {
+                const response = await fetch('./manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    html += createStatus('✓ Manifest File Accessible', 'pass') + '<br>';
+                    html += `<small>Name: ${manifest.name || 'Not specified'}</small><br>`;
+                    html += `<small>Icons: ${manifest.icons ? manifest.icons.length : 0} defined</small><br>`;
+                    html += `<small>Start URL: ${manifest.start_url || 'Not specified'}</small><br>`;
+                    html += `<small>Display: ${manifest.display || 'Not specified'}</small><br>`;
+                } else {
+                    html += createStatus('✗ Manifest File Not Accessible', 'fail') + '<br>';
+                }
+            } catch (error) {
+                html += createStatus('✗ Manifest Error: ' + error.message, 'fail') + '<br>';
+            }
+
+            container.innerHTML = html;
+            log('Manifest check completed');
+        }
+
+        async function checkIcons() {
+            const container = document.getElementById('icon-status');
+            let html = '';
+
+            // Check if icon files exist
+            const icons = ['icon-192x192.png'];
+            
+            for (const icon of icons) {
+                try {
+                    const response = await fetch('./' + icon);
+                    if (response.ok) {
+                        html += createStatus(`✓ ${icon} exists`, 'pass') + '<br>';
+                    } else {
+                        html += createStatus(`✗ ${icon} not found`, 'fail') + '<br>';
+                    }
+                } catch (error) {
+                    html += createStatus(`✗ ${icon} error: ${error.message}`, 'fail') + '<br>';
+                }
+            }
+
+            container.innerHTML = html;
+            log('Icon check completed');
+        }
+
+        async function runAllTests() {
+            log('Starting comprehensive PWA test...');
+            await runPWATests();
+            await checkServiceWorker();
+            await checkManifest();
+            await checkIcons();
+            log('All tests completed!');
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            log('PWA Test page loaded');
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Icon Generator - Assignment Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .icon-preview {
+            margin: 30px 0;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .icon-size {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        canvas {
+            border-radius: 10px;
+            display: block;
+        }
+
+        .size-label {
+            color: white;
+            font-size: 0.875rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .controls {
+            margin: 30px 0;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: none;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
+        .info {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 PWA Icon Generator</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 30px;">
+            Generate high-quality icons for your Assignment Tracker PWA
+        </p>
+
+        <div class="icon-preview">
+            <div class="icon-size">
+                <canvas id="icon192" width="192" height="192"></canvas>
+                <div class="size-label">192×192</div>
+            </div>
+            <div class="icon-size">
+                <canvas id="icon512" width="512" height="512"></canvas>
+                <div class="size-label">512×512</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="generateIcons()">🎨 Generate Icons</button>
+            <button class="download-btn" onclick="downloadIcon(192)">⬇️ Download 192×192</button>
+            <button class="download-btn" onclick="downloadIcon(512)">⬇️ Download 512×512</button>
+            <button onclick="downloadAll()">📦 Download All</button>
+        </div>
+
+        <div class="info">
+            <strong>Perfect for:</strong> PWA installation, app stores, and device home screens<br>
+            <strong>Features:</strong> Glassmorphic design, high resolution, optimized for all devices
+        </div>
+    </div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 512;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Glassmorphic overlay
+            const glassGradient = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+            glassGradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+            glassGradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+            ctx.fillStyle = glassGradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Main icon background circle
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.35, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fill();
+            
+            // Inner circle with stronger glass effect
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.3, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.fill();
+            
+            // Assignment icon - clipboard
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const iconSize = size * 0.4;
+            
+            // Clipboard background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(centerX - iconSize/3, centerY - iconSize/2.5, iconSize * 0.67, iconSize * 0.8);
+            
+            // Clipboard clip
+            ctx.fillStyle = 'rgba(245, 158, 11, 1)';
+            ctx.fillRect(centerX - iconSize/8, centerY - iconSize/2.5, iconSize * 0.25, iconSize * 0.15);
+            
+            // Assignment lines
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.8)';
+            ctx.lineWidth = size * 0.008;
+            
+            for (let i = 0; i < 4; i++) {
+                const y = centerY - iconSize/4 + (i * iconSize/8);
+                ctx.beginPath();
+                ctx.moveTo(centerX - iconSize/4, y);
+                ctx.lineTo(centerX + iconSize/4, y);
+                ctx.stroke();
+            }
+            
+            // Checkmarks
+            ctx.strokeStyle = 'rgba(16, 185, 129, 1)';
+            ctx.lineWidth = size * 0.012;
+            ctx.lineCap = 'round';
+            
+            // First checkmark
+            ctx.beginPath();
+            ctx.moveTo(centerX - iconSize/3.5, centerY - iconSize/6);
+            ctx.lineTo(centerX - iconSize/5, centerY - iconSize/12);
+            ctx.lineTo(centerX - iconSize/8, centerY - iconSize/4);
+            ctx.stroke();
+            
+            // Second checkmark
+            ctx.beginPath();
+            ctx.moveTo(centerX - iconSize/3.5, centerY + iconSize/12);
+            ctx.lineTo(centerX - iconSize/5, centerY + iconSize/6);
+            ctx.lineTo(centerX - iconSize/8, centerY + iconSize/24);
+            ctx.stroke();
+            
+            // Highlight effect
+            const highlightGradient = ctx.createLinearGradient(0, 0, size, size/2);
+            highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+            highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = highlightGradient;
+            ctx.fillRect(0, 0, size, size/2);
+        }
+
+        function generateIcons() {
+            const canvas192 = document.getElementById('icon192');
+            const canvas512 = document.getElementById('icon512');
+            
+            drawIcon(canvas192, 192);
+            drawIcon(canvas512, 512);
+        }
+
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`icon${size}`);
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadAll() {
+            downloadIcon(192);
+            setTimeout(() => downloadIcon(512), 500);
+        }
+
+        // Generate icons on page load
+        window.addEventListener('load', generateIcons);
+    </script>
+</body>
+</html>

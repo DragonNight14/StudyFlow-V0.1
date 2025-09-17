@@ -1,0 +1,44 @@
+{
+  "name": "assignment-tracker",
+  "version": "1.0.0",
+  "description": "A PWA for tracking academic assignments with Canvas and Google Classroom integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1",
+    "build": "npx cap copy",
+    "android": "npx cap run android",
+    "build-apk": "npx cap copy && npx cap open android",
+    "build-apk-simple": "build-apk-simple.bat",
+    "test": "echo 'No tests specified'",
+    "debug": "debug-and-build.bat",
+    "generate-icons": "start create-icons.html",
+    "pwa-test": "npx http-server -p 8080 -c-1 && start http://localhost:8080"
+  },
+  "keywords": [
+    "pwa",
+    "assignments",
+    "education",
+    "canvas",
+    "google-classroom",
+    "productivity",
+    "homework",
+    "tracker",
+    "glassmorphic",
+    "capacitor",
+    "android"
+  ],
+  "author": "Assignment Tracker Team",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^5.7.8",
+    "@capacitor/cli": "^5.7.8",
+    "@capacitor/core": "^5.7.8"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

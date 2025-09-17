@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .icon-container {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .download-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .download-btn:hover {
+            background: #5a67d8;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h1>🎨 PWA Icon Generator</h1>
+        <p>This tool generates the required icons for your Assignment Tracker PWA. Click the download buttons to save the icons to your project folder.</p>
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Click "Download 192x192" to save the small icon</li>
+            <li>Click "Download 512x512" to save the large icon</li>
+            <li>Rename the downloaded files to <code>icon-192x192.png</code> and <code>icon-512x512.png</code></li>
+            <li>Place them in your project root directory</li>
+        </ol>
+    </div>
+
+    <div class="icon-container">
+        <canvas id="icon192" width="192" height="192"></canvas>
+        <br>
+        <a href="#" class="download-btn" onclick="downloadIcon('icon192', 'icon-192x192.png')">Download 192x192</a>
+    </div>
+
+    <div class="icon-container">
+        <canvas id="icon512" width="512" height="512"></canvas>
+        <br>
+        <a href="#" class="download-btn" onclick="downloadIcon('icon512', 'icon-512x512.png')">Download 512x512</a>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            // Fill background
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add subtle pattern
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < size; i += 20) {
+                for (let j = 0; j < size; j += 20) {
+                    if ((i + j) % 40 === 0) {
+                        ctx.fillRect(i, j, 10, 10);
+                    }
+                }
+            }
+            
+            // Add main icon (assignment/notebook)
+            ctx.fillStyle = 'white';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            // Draw notebook/assignment icon
+            const iconSize = size * 0.4;
+            const iconX = size / 2 - iconSize / 2;
+            const iconY = size / 2 - iconSize / 2;
+            
+            // Notebook base
+            ctx.fillRect(iconX, iconY, iconSize, iconSize * 0.8);
+            
+            // Notebook binding
+            ctx.fillStyle = '#4a5568';
+            ctx.fillRect(iconX + iconSize * 0.1, iconY, iconSize * 0.05, iconSize * 0.8);
+            
+            // Lines on notebook
+            ctx.fillStyle = '#e2e8f0';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            for (let i = 0; i < 5; i++) {
+                const lineY = iconY + iconSize * 0.2 + i * iconSize * 0.12;
+                ctx.fillRect(iconX + iconSize * 0.2, lineY, iconSize * 0.6, 2);
+            }
+            
+            // Checkmark
+            ctx.fillStyle = '#48bb78';
+            ctx.font = `bold ${iconSize * 0.3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✓', iconX + iconSize * 0.75, iconY + iconSize * 0.25);
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Generate icons
+        createIcon('icon192', 192);
+        createIcon('icon512', 512);
+        
+        console.log('🎨 Icons generated successfully!');
+    </script>
+</body>
+</html>
